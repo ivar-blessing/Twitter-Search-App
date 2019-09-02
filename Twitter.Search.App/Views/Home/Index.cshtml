@@ -3,3 +3,10 @@
 }
 
 <div id="twitter-feed"></div>
+
+@if(ViewData["HashTag"] != null)
+{
+    <script>
+        var hashTag = '@ViewData["HashTag"]';
+    </script>
+}

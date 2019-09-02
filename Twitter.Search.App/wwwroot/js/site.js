@@ -1,15 +1,10 @@
-﻿//JQuery Twitter Feed. Coded by Tom Elliott @ www.tomelliott.com (2013) based on https://twitter.com/javascripts/blogger.js
-//Requires JSON output from authenticating script: https://tomelliott.com/php/authenticating-twitter-feed-timeline-oauth/
-
-$(document).ready(function () {
+﻿$(document).ready(function () {
     // ------------ Twitter Feed Variables	------------	
     var totaltweets = 12; //Must be a multiple of tweetshift;
-    var twitterprofile = "tomwebdev";
     var screenname = "#A9Dualling";
     var showdirecttweets = false;
     var showretweets = true;
     var showtweetlinks = true;
-    var showprofilepic = true;
     var showtweetactions = false;
     var showretweetindicator = false;
 
@@ -20,7 +15,6 @@ $(document).ready(function () {
     var tweetshift = 3
     var slideinitial = true;
 
-
     var headerHTML = '';
     var loadingHTML = '';
     headerHTML += '<div id="twitter-header"><a href="https://twitter.com/" target="_blank"><img src="images/twitter-bird-light.png" width="34" style="float:left;padding:3px 12px 0px 6px" alt="twitter bird" /></a>';
@@ -29,9 +23,14 @@ $(document).ready(function () {
 
     $('#twitter-feed').html(headerHTML + loadingHTML);
 
-    $.getJSON('/home/gettweets',
+    var jsonUrl = '/home/gettweets';
+
+    if (typeof hashTag !== 'undefined') {
+        jsonUrl += '?ht=' + hashTag;
+    }
+
+    $.getJSON(jsonUrl,
         function (feeds) {
-            console.log(feeds);
             var feedHTML = '';
             var displayCounter = 1;
 

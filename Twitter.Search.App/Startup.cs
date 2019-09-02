@@ -38,6 +38,8 @@ namespace Twitter.Search.App
 
             services.AddSingleton<ISearchService, SearchService>();
 
+            services.AddResponseCaching();
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
@@ -54,6 +56,7 @@ namespace Twitter.Search.App
                 app.UseHsts();
             }
 
+            app.UseResponseCaching();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();

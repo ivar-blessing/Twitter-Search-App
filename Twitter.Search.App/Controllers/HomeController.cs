@@ -22,21 +22,24 @@ namespace Twitter.Search.App.Controllers
             _searchService = searchService;
         }
 
-        public IActionResult Index()
-        {          
+        public IActionResult Index(string ht)
+        {
+            ViewData["HashTag"] = ht;
             return View();
-        }       
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
-
-        //[ResponseCache(Duration = 300)]
-        public JsonResult GetTweets()
+        
+        [ResponseCache(Duration = 300, VaryByQueryKeys = new string[] {"ht"})]
+        public JsonResult GetTweets(string ht = null)
         {
-            var query = $"?q=%23{_appSettings.HashTag}&result_type=recent";
+            var searchFor = ht ?? _appSettings.HashTag;
+
+            var query = $"?q=%23{searchFor}&result_type=recent";
 
             var result = QueryTweets(query);
 
@@ -48,7 +51,7 @@ namespace Twitter.Search.App.Controllers
             var userStatusCollection = new List<Status>();
             var userStatusQuery = _searchService.GetData(query).Result;
             var userStatusObj = JsonConvert.DeserializeObject<TweetSearchResponse>(userStatusQuery);
-            userStatusCollection.AddRange(userStatusObj.Statuses.Where(x => x.RetweetedStatus == null));
+            userStatusCollection.AddRange(userStatusObj.Statuses.Where(x => x.RetweetedStatus == null)); //  filter out retweets
 
             if (string.IsNullOrEmpty(userStatusObj.SearchMetadata?.NextResults))
                 return userStatusCollection;
