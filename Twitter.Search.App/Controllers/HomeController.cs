@@ -33,7 +33,7 @@ namespace Twitter.Search.App.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        [ResponseCache(Duration = 300)]
+        //[ResponseCache(Duration = 300)]
         public JsonResult GetTweets()
         {
             var query = $"?q=%23{_appSettings.HashTag}&result_type=recent";
@@ -48,7 +48,7 @@ namespace Twitter.Search.App.Controllers
             var userStatusCollection = new List<Status>();
             var userStatusQuery = _searchService.GetData(query).Result;
             var userStatusObj = JsonConvert.DeserializeObject<TweetSearchResponse>(userStatusQuery);
-            userStatusCollection.AddRange(userStatusObj.Statuses);
+            userStatusCollection.AddRange(userStatusObj.Statuses.Where(x => x.RetweetedStatus == null));
 
             if (string.IsNullOrEmpty(userStatusObj.SearchMetadata?.NextResults))
                 return userStatusCollection;

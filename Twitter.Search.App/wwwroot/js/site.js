@@ -47,7 +47,7 @@ $(document).ready(function () {
 
 
                 //If the tweet has been retweeted, get the profile pic of the tweeter
-                if (typeof feeds[i].retweeted_status != 'undefined') {
+                if (feeds[i].is_retweet) {
                     profileimage = feeds[i].retweeted_status.user.profile_image_url_https;
                     tweetscreenname = feeds[i].retweeted_status.user.name;
                     tweetusername = feeds[i].retweeted_status.user.screen_name;
@@ -85,7 +85,7 @@ $(document).ready(function () {
 
                         feedHTML += '<div class="twitter-article" id="t' + displayCounter + '" ' + pb + '>';
                         feedHTML += '<div class="twitter-pic"><a href="https://twitter.com/' + tweetusername + '" target="_blank"><img src="' + profileimage + '"images/twitter-feed-icon.png" width="42" height="42" alt="twitter icon" /></a></div>';
-                        feedHTML += '<div class="twitter-text"><p><span class="tweetprofilelink"><strong><a href="https://twitter.com/' + tweetusername + '" target="_blank">' + tweetscreenname + '</a></strong> <a href="https://twitter.com/' + tweetusername + '" target="_blank">@' + tweetusername + '</a></span><span class="tweet-time"><a href="https://twitter.com/' + tweetusername + '/status/' + tweetid + '" target="_blank">' + relative_time(feeds[i].createdAt) + '</a></span><br/>' + status + '</p>';
+                        feedHTML += '<div class="twitter-text"><p><span class="tweetprofilelink"><strong><a href="https://twitter.com/' + tweetusername + '" target="_blank">' + tweetscreenname + '</a></strong> <a href="https://twitter.com/' + tweetusername + '" target="_blank">@' + tweetusername + '</a></span><span class="tweet-time"><a href="https://twitter.com/' + tweetusername + '/status/' + tweetid + '" target="_blank">' + relative_time(feeds[i].created_at) + '</a></span><br/>' + status + '</p>';
 
                         if ((isaretweet == true) && (showretweetindicator == true)) {
                             feedHTML += '<div id="retweet-indicator"></div>';
@@ -143,18 +143,15 @@ $(document).ready(function () {
 
                 function scrolltweets() {
                     var currentheight = 0;
-                    //totalheight = 0;
                     for (var i = 0; i < tweetshift; i++) {
                         var nexttweet = currenttweet + i;
                         if (nexttweet > totaltweets) {
                             nexttweet -= totaltweets;
                         }
-                        //console.log(nexttweet + " "+ currenttweet);
                         currentheight += tweetheight[nexttweet];
                     }
 
                     for (var i = 1; i <= totaltweets; i++) {
-                        //totalheight+=tweetheight[i];
                         $('#t' + i).animate({ 'top': (parseInt($('#t' + i).css('top')) - currentheight) }, slidetime, function () {
 
                             var animatedid = parseInt($(this).attr('id').substr(1, 2));
@@ -177,19 +174,7 @@ $(document).ready(function () {
 
                             }
                         });
-                    }
-
-					/*$('.tweets-slider').animate({'top': '-='+currentheight+''}, 1000, function() {
-						$('#t'+currenttweet).css('top', totalheight);
-						totalheight+=tweetheight[currenttweet];
-						
-						if (currenttweet == totaltweets) {
-							currenttweet = 1;
-						} else {
-							currenttweet++;
-						}
-					});*/
-                    //console.log(currentheight);
+                    }					
                 }
             }
 
@@ -216,7 +201,7 @@ $(document).ready(function () {
             }
 
 
-        }).error(function (jqXHR, textStatus, errorThrown) {
+        }).fail(function (jqXHR, textStatus, errorThrown) {
             var error = "";
             if (jqXHR.status === 0) {
                 error = 'Connection problem. Check file path and www vs non-www in getJSON request';
@@ -257,6 +242,7 @@ $(document).ready(function () {
 
 
     function relative_time(time_value) {
+        console.log(time_value);
         if (time_value == '' || time_value === '' || time_value == null) {
             return time_value;
         }
